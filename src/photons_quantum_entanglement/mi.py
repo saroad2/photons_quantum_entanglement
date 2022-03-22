@@ -29,7 +29,8 @@ def wave_packet(x, I, f, sigma, phi):
 @click.option(
     "-o", "--output-dir", type=click.Path(file_okay=False), required=True
 )
-def mi_fit(csv_path, column, output_dir):
+@click.option("--fit-plot/--no-fit-plot", default=True)
+def mi_fit(csv_path, column, output_dir, fit_plot):
     csv_path = Path(csv_path)
     output_dir = Path(output_dir)
     df = pd.read_csv(csv_path)
@@ -74,7 +75,8 @@ def mi_fit(csv_path, column, output_dir):
     plt.xlabel("Wedge position [mm]")
     plt.ylabel("Coincidence rate")
     plt.scatter(x, y)
-    plt.plot(x, wave_packet(x - x0, *popt) * y_max)
+    if fit_plot:
+        plt.plot(x, wave_packet(x - x0, *popt) * y_max)
     plt.savefig(output_dir / f"{csv_path.stem}_{column.replace(' ', '_')}_fit")
     plt.clf()
 
