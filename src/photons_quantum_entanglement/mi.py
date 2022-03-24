@@ -40,7 +40,7 @@ def mi_fit(csv_path, column, output_dir, fit_plot):
 
     p0 = [1, 1, 20, 1]
     x0 = x[y.argmax()]
-    y_max = y.max()
+    y_max = float(y.max())
     sigma = np.sqrt(y) / y_max
     popt, pcov = optimize.curve_fit(
         wave_packet,
@@ -61,6 +61,7 @@ def mi_fit(csv_path, column, output_dir, fit_plot):
         json.dump(
             dict(
                 result=popt.tolist(),
+                y_max=y_max,
                 covariance=pcov.tolist(),
                 errors=errors.tolist(),
                 percentage_errors=(errors / np.fabs(popt) * 100).tolist(),
@@ -74,9 +75,9 @@ def mi_fit(csv_path, column, output_dir, fit_plot):
     plt.title("Michelson interferometer")
     plt.xlabel("Wedge position [mm]")
     plt.ylabel("Coincidence rate")
-    plt.scatter(x, y)
     if fit_plot:
         plt.plot(x, wave_packet(x - x0, *popt) * y_max)
+    plt.errorbar(x, y, yerr=sigma * y_max, marker=".", markersize=5, linestyle="none")
     plt.savefig(output_dir / f"{csv_path.stem}_{column.replace(' ', '_')}_fit")
     plt.clf()
 
