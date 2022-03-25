@@ -51,6 +51,10 @@ def chsh_calc(excel_path, sheet_name):
     e_plus_67 = E_value(df, "+", 67.5)
     chsh = e_H_22 + e_plus_22 - e_H_67 + e_plus_67
     n_delta = (chsh.nominal_value - 2) / chsh.std_dev
+    print(f"{e_H_22=} ({e_H_22.std_dev / e_H_22.nominal_value * 100:.2f}%)")
+    print(f"{e_H_67=} ({e_H_67.std_dev / e_H_67.nominal_value * 100:.2f}%)")
+    print(f"{e_plus_22=} ({e_plus_22.std_dev / e_plus_22.nominal_value * 100:.2f}%)")
+    print(f"{e_plus_67=} ({e_plus_67.std_dev / e_plus_67.nominal_value * 100:.2f}%)")
     print(f"{chsh=}")
     print(f"{n_delta=}")
 
