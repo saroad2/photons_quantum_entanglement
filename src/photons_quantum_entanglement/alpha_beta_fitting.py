@@ -9,6 +9,14 @@ from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 
 
+ALPHA_TO_NAME = {
+    0: "H",
+    45: "P",
+    90: "V",
+    135: "M"
+}
+
+
 def malus(x, a, b, c, d):
     return a / 2 * (1 - b * np.sin((x - d) / c))
 
@@ -26,7 +34,8 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
     df = pd.read_excel(excel_path, sheet_name=sheet_name)
 
     for alpha_value, betac_value in zip(alpha, betac):
-        click.echo(f"Fitting alpha={alpha_value}")
+        alpha_name = ALPHA_TO_NAME[alpha_value]
+        click.echo(f"Fitting alpha={alpha_value} (position {alpha_name})")
         data_column = f"alpha={alpha_value}"
 
         df["beta radians"] = df["beta"] / 180 * np.pi
@@ -85,9 +94,9 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
             )
 
         # Plot
-        plt.title(rf"Coincidence rate by angle, $\alpha={alpha_value}$")
-        plt.xlabel(rf"$\beta$ [degrees]")
-        plt.ylabel("Coincidence count")
+        plt.title(rf"Coincidence rate by angle, first polarizer fixed on {alpha_name}")
+        plt.xlabel(rf"Second polarizer angle $\beta$ [$\circ$]")
+        plt.ylabel("Coincidence count rate per second [1/sec]")
         plt.errorbar(
             df["beta"],
             df[data_column],
