@@ -45,8 +45,21 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
             bounds=(0, 6 * np.pi),
             absolute_sigma=True,
         )
-
         errors = np.sqrt(np.diagonal(pcov))
+
+        unnormalized_result = [
+            popt[0] * max_column,  # Fix y normalization
+            popt[1],  # Visibility stays the same
+            popt[2],  # Multiplication factor stays the same
+            popt[3] * 180 / np.pi,  # Radians to Degrees
+        ]
+        unnormalized_errors = [
+            errors[0] * max_column,  # Fix y normalization
+            errors[1],  # Visibility stays the same
+            errors[2],  # Multiplication factor stays the same
+            errors[3] * 180 / np.pi,  # Radians to Degrees
+        ]
+
         fitted_values = malus(x, *popt)
         residuals = y - fitted_values
         chi2 = np.sum((residuals / sigma) ** 2)
@@ -59,9 +72,11 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
             json.dump(
                 dict(
                     result=popt.tolist(),
+                    unnormalized_result=unnormalized_result,
                     max_value=max_column,
                     covariance=pcov.tolist(),
                     errors=errors.tolist(),
+                    unnormalized_errors=unnormalized_errors,
                     percentage_errors=(errors / popt * 100).tolist(),
                     chi2=chi2,
                 ),
