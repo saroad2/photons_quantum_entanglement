@@ -73,7 +73,6 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
         plt.title(rf"Coincidence rate by angle, $\alpha={alpha_value}$")
         plt.xlabel(rf"$\beta$ [degrees]")
         plt.ylabel("Coincidence count")
-        plt.plot(df["beta"], fitted_values * max_column)
         plt.errorbar(
             df["beta"],
             df[data_column],
@@ -82,6 +81,7 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
             marker=".",
             markersize=5,
         )
+        plt.plot(df["beta"], fitted_values * max_column)
         plt.savefig(output_dir / f"alpha_beta_fit_{alpha_value}")
         plt.clf()
 
