@@ -59,13 +59,13 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
         unnormalized_result = [
             popt[0] * max_column,  # Fix y normalization
             popt[1],  # Visibility stays the same
-            popt[2],  # Multiplication factor stays the same
+            popt[2] * 180 / np.pi,    # Radians to Degrees
             popt[3] * 180 / np.pi,  # Radians to Degrees
         ]
         unnormalized_errors = [
             errors[0] * max_column,  # Fix y normalization
             errors[1],  # Visibility stays the same
-            errors[2],  # Multiplication factor stays the same
+            errors[2] * 180 / np.pi,    # Radians to Degrees
             errors[3] * 180 / np.pi,  # Radians to Degrees
         ]
 
@@ -81,12 +81,12 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
             json.dump(
                 dict(
                     result=popt.tolist(),
-                    unnormalized_result=unnormalized_result,
-                    max_value=max_column,
-                    covariance=pcov.tolist(),
                     errors=errors.tolist(),
+                    unnormalized_result=unnormalized_result,
                     unnormalized_errors=unnormalized_errors,
                     percentage_errors=(errors / popt * 100).tolist(),
+                    max_value=max_column,
+                    covariance=pcov.tolist(),
                     chi2=chi2,
                 ),
                 fd,
@@ -94,9 +94,6 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
             )
 
         # Plot
-        plt.title(rf"Coincidence rate by angle, first polarizer fixed on {alpha_name}")
-        plt.xlabel(rf"Second polarizer angle $\beta$ [$\circ$]")
-        plt.ylabel("Coincidence count rate per second [1/sec]")
         plt.errorbar(
             df["beta"],
             df[data_column],
@@ -106,7 +103,7 @@ def fit_alpha_beta(excel_path, alpha, betac, output_dir, sheet_name):
             markersize=5,
         )
         plt.plot(df["beta"], fitted_values * max_column)
-        plt.savefig(output_dir / f"alpha_beta_fit_{alpha_value}")
+        plt.savefig(output_dir / f"alpha_beta_fit_{alpha_value}", bbox_inches="tight")
         plt.clf()
 
         # Residuals Plot
